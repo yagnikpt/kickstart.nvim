@@ -185,10 +185,10 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
 -- TIP: Disable arrow keys in normal mode
--- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
--- vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
--- vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
--- vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
+vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
+vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
+vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
+vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
 
 -- Keybinds to make split navigation easier.
 --  Use CTRL+<hjkl> to switch between windows
@@ -297,6 +297,10 @@ require('lazy').setup({
   --
   -- Then, because we use the `opts` key (recommended), the configuration runs
   -- after the plugin has been loaded as `require(MODULE).setup(opts)`.
+
+  { 'wakatime/vim-wakatime', lazy = false },
+
+  { 'numToStr/Comment.nvim' },
 
   { -- Useful plugin to show you pending keybinds.
     'folke/which-key.nvim',
@@ -544,7 +548,7 @@ require('lazy').setup({
           map('gra', vim.lsp.buf.code_action, '[G]oto Code [A]ction', { 'n', 'x' })
 
           -- Find references for the word under your cursor.
-          map('grr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
+          map('[G]oto [R]eferences', require('telescope.builtin').lsp_references, 'grr')
 
           -- Jump to the implementation of the word under your cursor.
           --  Useful when your language has ways of declaring types without an actual implementation.
@@ -673,7 +677,7 @@ require('lazy').setup({
       local servers = {
         -- clangd = {},
         -- gopls = {},
-        -- pyright = {},
+        pyright = {},
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
@@ -716,6 +720,7 @@ require('lazy').setup({
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
+        'pyright',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -876,27 +881,39 @@ require('lazy').setup({
     },
   },
 
-  { -- You can easily change to a different colorscheme.
-    -- Change the name of the colorscheme plugin below, and then
-    -- change the command in the config to whatever the name of that colorscheme is.
-    --
-    -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-    'folke/tokyonight.nvim',
-    priority = 1000, -- Make sure to load this before all the other start plugins.
-    config = function()
-      ---@diagnostic disable-next-line: missing-fields
-      require('tokyonight').setup {
-        styles = {
-          comments = { italic = false }, -- Disable italics in comments
-        },
-      }
-
-      -- Load the colorscheme here.
-      -- Like many other themes, this one has different styles, and you could load
-      -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'tokyonight-night'
-    end,
+  {
+    'datsfilipe/vesper.nvim',
+    priority = 1000,
   },
+
+  {
+    'rebelot/kanagawa.nvim',
+    priority = 1000,
+  },
+
+  { 'rose-pine/neovim', name = 'rose-pine', priority = 1000 },
+
+  -- { -- You can easily change to a different colorscheme.
+  -- Change the name of the colorscheme plugin below, and then
+  -- change the command in the config to whatever the name of that colorscheme is.
+  --
+  -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
+  -- 'folke/tokyonight.nvim',
+  -- priority = 1000, -- Make sure to load this before all the other start plugins.
+  --config = function()
+  ---@diagnostic disable-next-line: missing-fields
+  --require('tokyonight').setu:p:w {
+  --styles = {
+  --comments = { italic = false }, -- Disable italics in comments
+  --},
+  --}
+
+  -- Load the colorscheme here.
+  -- Like many other themes, this one has different styles, and you could load
+  -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
+  -- vim.cmd.colorscheme 'tokyonight-night'
+  --end,
+  --},
 
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
@@ -1011,6 +1028,55 @@ require('lazy').setup({
     },
   },
 })
+
+local function get_gnome_theme()
+  local handle = io.popen 'gsettings get org.gnome.desktop.interface color-scheme'
+  if handle then
+    local result = handle:read '*a'
+    handle:close()
+    result = result:gsub('[\n\r%"]', ''):gsub('^%s*(.-)%s*$', '%1')
+    return result
+  end
+  return 'default'
+end
+
+local function setup_theme()
+  local gnome_theme = get_gnome_theme()
+  if gnome_theme == "'prefer-dark'" then
+    require('vesper').setup {
+      transparent = true,
+      italics = {
+        comments = false,
+        keywords = false,
+        functions = false,
+        strings = false,
+        variables = false,
+      },
+    }
+    vim.cmd.colorscheme 'vesper'
+  else
+    -- require('kanagawa').setup {
+    --   commentStyle = { italic = false },
+    --   functionStyle = {},
+    --   keywordStyle = { italic = false },
+    --   statementStyle = { bold = true },
+    --   transparent = true,
+    --   theme = 'lotus',
+    -- }
+    require('rose-pine').setup {
+      variant = 'dawn',
+      styles = {
+        bold = true,
+        italic = false,
+        transparency = true,
+      },
+    }
+
+    vim.cmd 'colorscheme rose-pine-dawn'
+  end
+end
+
+setup_theme()
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
