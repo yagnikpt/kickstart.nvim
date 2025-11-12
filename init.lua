@@ -246,8 +246,10 @@ rtp:prepend(lazypath)
 --
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
+  { import = 'custom.plugins' },
+
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
-  'NMAC427/guess-indent.nvim', -- Detect tabstop and shiftwidth automatically
+  { 'NMAC427/guess-indent.nvim', opts = {} },
 
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
@@ -297,10 +299,6 @@ require('lazy').setup({
   --
   -- Then, because we use the `opts` key (recommended), the configuration runs
   -- after the plugin has been loaded as `require(MODULE).setup(opts)`.
-
-  { 'wakatime/vim-wakatime', lazy = false },
-
-  { 'numToStr/Comment.nvim' },
 
   { -- Useful plugin to show you pending keybinds.
     'folke/which-key.nvim',
@@ -880,18 +878,6 @@ require('lazy').setup({
       signature = { enabled = true },
     },
   },
-
-  {
-    'datsfilipe/vesper.nvim',
-    priority = 1000,
-  },
-
-  {
-    'rebelot/kanagawa.nvim',
-    priority = 1000,
-  },
-
-  { 'rose-pine/neovim', name = 'rose-pine', priority = 1000 },
 
   -- { -- You can easily change to a different colorscheme.
   -- Change the name of the colorscheme plugin below, and then
