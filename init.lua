@@ -91,7 +91,15 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
+vim.g.have_nerd_font = true
+vim.keymap.set('n', 'd', '"_d', { noremap = true })
+vim.keymap.set('n', 'c', '"_c', { noremap = true })
+vim.keymap.set('n', 'x', '"_x', { noremap = true })
+vim.keymap.set('v', 'd', '"_d', { noremap = true })
+vim.keymap.set('v', 'c', '"_c', { noremap = true })
+vim.opt.tabstop = 4
+vim.opt.shiftwidth = 4
+vim.opt.expandtab = true
 
 -- [[ Setting options ]]
 -- See `:help vim.o`
@@ -414,7 +422,11 @@ require('lazy').setup({
         --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
         --   },
         -- },
-        -- pickers = {}
+        pickers = {
+          find_files = {
+            find_command = { 'rg', '--files', '--hidden', '--glob', '!**/.git/*' },
+          },
+        },
         extensions = {
           ['ui-select'] = {
             require('telescope.themes').get_dropdown(),
@@ -1014,55 +1026,6 @@ require('lazy').setup({
     },
   },
 })
-
-local function get_gnome_theme()
-  local handle = io.popen 'gsettings get org.gnome.desktop.interface color-scheme'
-  if handle then
-    local result = handle:read '*a'
-    handle:close()
-    result = result:gsub('[\n\r%"]', ''):gsub('^%s*(.-)%s*$', '%1')
-    return result
-  end
-  return 'default'
-end
-
-local function setup_theme()
-  local gnome_theme = get_gnome_theme()
-  if gnome_theme == "'prefer-dark'" then
-    require('vesper').setup {
-      transparent = true,
-      italics = {
-        comments = false,
-        keywords = false,
-        functions = false,
-        strings = false,
-        variables = false,
-      },
-    }
-    vim.cmd.colorscheme 'vesper'
-  else
-    -- require('kanagawa').setup {
-    --   commentStyle = { italic = false },
-    --   functionStyle = {},
-    --   keywordStyle = { italic = false },
-    --   statementStyle = { bold = true },
-    --   transparent = true,
-    --   theme = 'lotus',
-    -- }
-    require('rose-pine').setup {
-      variant = 'dawn',
-      styles = {
-        bold = true,
-        italic = false,
-        transparency = true,
-      },
-    }
-
-    vim.cmd 'colorscheme rose-pine-dawn'
-  end
-end
-
-setup_theme()
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
