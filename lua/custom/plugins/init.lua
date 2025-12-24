@@ -5,31 +5,54 @@
 
 return {
   { 'wakatime/vim-wakatime', lazy = false },
+  -- {
+  --   'datsfilipe/vesper.nvim',
+  --   -- lazy = false,
+  --   config = function()
+  --     require('vesper').setup {
+  --       transparent = true,
+  --       italics = {
+  --         comments = false,
+  --         keywords = false,
+  --         functions = false,
+  --         strings = false,
+  --         variables = false,
+  --       },
+  --     }
+  --   end,
+  -- },
+  -- {
+  --   'rebelot/kanagawa.nvim',
+  --   priority = 1000,
+  --   config = function()
+  --     require('kanagawa').setup {
+  --       transparent = true,
+  --       keywordStyle = { italic = false },
+  --       commentStyle = { italic = false },
+  --       background = {
+  --         light = 'lotus',
+  --         dark = 'dragon',
+  --       },
+  --       overrides = function()
+  --         return {
+  --           SignColumn = { bg = 'NONE' },
+  --           LineNr = { bg = 'NONE' },
+  --         }
+  --       end,
+  --     }
+  --     -- vim.cmd.colorscheme 'kanagawa'
+  --   end,
+  -- },
   {
-    'datsfilipe/vesper.nvim',
+    'sainnhe/gruvbox-material',
     lazy = false,
-    config = function()
-      require('vesper').setup {
-        transparent = true,
-        italics = {
-          comments = false,
-          keywords = false,
-          functions = false,
-          strings = false,
-          variables = false,
-        },
-      }
-    end,
-  },
-  {
-    'ellisonleao/gruvbox.nvim',
     priority = 1000,
     config = function()
-      require('gruvbox').setup {
-        contrast = 'hard',
-      }
-      vim.cmd.colorscheme 'gruvbox'
-      vim.api.nvim_set_hl(0, 'FloatBorder', { link = 'Normal' })
+      vim.g.gruvbox_material_enable_italic = false
+      vim.g.gruvbox_material_background = 'hard'
+      vim.g.gruvbox_material_disable_italic_comment = '1'
+      vim.g.gruvbox_material_ui_contrast = 'high'
+      vim.cmd.colorscheme 'gruvbox-material'
     end,
   },
   {
